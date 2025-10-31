@@ -6,7 +6,7 @@ app.use(express.json());
 
 // Ruta base de prueba
 app.get('/', (req, res) => {
-    res.send('Servidor funcionando 🚀');
+    res.send('Servidor funcionando');
 });
 
 // Puerto
