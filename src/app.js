@@ -1,18 +1,24 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const app = express();
-const PORT = process.env.PORT || 3000;
-const MONGODB_URL = process.env.MONGODB_URL;
+import express from "express";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
 
-// Middleware para procesar JSON
+
+dotenv.config();
+const app = express();
+
+// Middlewares
 app.use(express.json());
 
-// Conexión a MongoDB
+// Conectar a MongoDB
+connectDB();
 
-// Ruta base de prueba
-app.get('/', (req, res) => {
-    res.send('Servidor funcionando');
+// Ruta de prueba
+app.get("/", (req, res) => {
+    res.send("Servidor conectado y MongoDB funcionando.");
 });
 
 // Puerto
-app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor ejecutándose en el puerto ${PORT}`);
+});
