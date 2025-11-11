@@ -1,18 +1,19 @@
 import express from "express";
 import {
-    getJuegos,
-    getJuego,
-    createJuego,
-    updateJuego,
-    deleteJuego,
+  obtenerJuegos,
+  obtenerJuegoPorId,
+  crearJuego,
+  actualizarJuego,
+  eliminarJuego,
 } from "../controllers/juegoController.js";
 
 const router = express.Router();
 
-router.get("/", getJuegos);
-router.get("/:id", getJuego);
-router.post("/", createJuego);
-router.put("/:id", updateJuego);
-router.delete("/:id", deleteJuego);
+// Rutas para CRUD de juegos
+router.get("/", obtenerJuegos);
+router.get("/:id", obtenerJuegoPorId);
+router.post("/", crearJuego);
+router.put("/:id", actualizarJuego);
+router.delete("/:id", eliminarJuego);
 
 export default router;

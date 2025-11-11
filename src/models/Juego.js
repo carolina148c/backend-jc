@@ -1,19 +1,15 @@
 import mongoose from "mongoose";
 
-const juegoSchema = new mongoose.Schema(
-    {
-    titulo: { type: String, required: true },
-    genero: { type: String, required: true },              // Ej: "Acción", "RPG"
-    plataforma: { type: String, required: true },          // Ej: "PC", "PlayStation"
-    añoLanzamiento: { type: Number },
-    desarrollador: { type: String },
-    imagenPortada: { type: String },                       // URL de la portada
-    descripcion: { type: String },
-    completado: { type: Boolean, default: false },
-    fechaCreacion: { type: Date, default: Date.now },
-    },
-    { versionKey: false } 
-);
+const juegoSchema = new mongoose.Schema({
+  titulo: { type: String, required: true },
+  genero: { type: String, required: true },
+  plataforma: { type: String, required: true },
+  anoLanzamiento: { type: Number, required: true },
+  desarrollador: { type: String, required: true },
+  imagenPortada: { type: String, required: true },
+  descripcion: { type: String, required: true },
+  completado: { type: Boolean, default: false },
+  fechaCreacion: { type: Date, default: Date.now }
+});
 
-const Juego = mongoose.model("Juego", juegoSchema);
-export default Juego;
+export default mongoose.model("Juego", juegoSchema);
