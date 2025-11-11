@@ -1,63 +1,57 @@
-import * as resenaService from "../services/resenaService.js";
+import Resena from "../models/Resena.js";
 
-export const getResenas = async (req, res) => {
+// Obtener todas las reseñas
+export const obtenerResenas = async (req, res) => {
     try {
-    const resenas = await resenaService.obtenerResenas();
+    const resenas = await Resena.find().populate("juegoId", "titulo plataforma genero");
     res.json(resenas);
-    } catch (error) {
+} catch (error) {
     res.status(500).json({ error: "Error al obtener las reseñas" });
-    }
+}
 };
 
-export const getResena = async (req, res) => {
+// Obtener reseñas por juego
+export const obtenerResenasPorJuego = async (req, res) => {
     try {
-    const resena = await resenaService.obtenerResenaPorId(req.params.id);
-    if (!resena) return res.status(404).json({ error: "Reseña no encontrada" });
-    res.json(resena);
-    } catch (error) {
-    res.status(500).json({ error: "Error al obtener la reseña" });
-    }
-};  
+    const resenas = await Resena.find({ juegoId: req.params.juegoId });
+    res.json(resenas);
+} catch (error) {
+    res.status(400).json({ error: "Error al obtener reseñas del juego" });
+}
+};
 
-export const createResena = async (req, res) => {
+// Crear una nueva reseña
+export const crearResena = async (req, res) => {
     try {
-    const { juegoId, puntuacion, textoReseña, horasJugadas, dificultad, recomendaria } = req.body;
-
-    const nuevaResena = await resenaService.crearResena({
-        juegoId,
-        puntuacion,
-        textoReseña,
-        horasJugadas,
-        dificultad,
-        recomendaria,
-    });
-
+    const nuevaResena = new Resena(req.body);
+    await nuevaResena.save();
     res.status(201).json(nuevaResena);
-    } catch (error) {
+} catch (error) {
     res.status(400).json({ error: "Error al crear la reseña" });
-    }
+}
 };
 
-export const updateResena = async (req, res) => {
+// Actualizar una reseña
+export const actualizarResena = async (req, res) => {
     try {
-    const resena = await resenaService.actualizarResena(req.params.id, {
-        ...req.body,
-        fechaActualizacion: Date.now(),
+    const resenaActualizada = await Resena.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
     });
-    if (!resena) return res.status(404).json({ error: "Reseña no encontrada" });
-    res.json(resena);
-    } catch (error) {
+    if (!resenaActualizada) return res.status(404).json({ error: "Reseña no encontrada" });
+    res.json(resenaActualizada);
+} catch (error) {
     res.status(400).json({ error: "Error al actualizar la reseña" });
-    }
+}
 };
 
-export const deleteResena = async (req, res) => {
+// Eliminar una reseña
+export const eliminarResena = async (req, res) => {
     try {
-    const eliminado = await resenaService.eliminarResena(req.params.id);
-    if (!eliminado)
-        return res.status(404).json({ error: "Reseña no encontrada" });
+    const eliminada = await Resena.findByIdAndDelete(req.params.id);
+    if (!eliminada) return res.status(404).json({ error: "Reseña no encontrada" });
     res.json({ mensaje: "Reseña eliminada correctamente" });
-    } catch (error) {
-    res.status(500).json({ error: "Error al eliminar la reseña" });
-    }
+} catch (error) {
+    res.status(400).json({ error: "Error al eliminar la reseña" });
+}
 };

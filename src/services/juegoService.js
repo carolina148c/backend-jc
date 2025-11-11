@@ -1,12 +1,27 @@
 import Juego from "../models/Juego.js";
 
-export const obtenerJuegos = async () => await Juego.find();
+// Obtener todos los juegos
+export const obtenerJuegos = async () => {
+  return await Juego.find();
+};
 
-export const obtenerJuegoPorId = async (id) => await Juego.findById(id);
+// Obtener un juego por ID
+export const obtenerJuegoPorId = async (id) => {
+  return await Juego.findById(id);
+};
 
-export const crearJuego = async (data) => await Juego.create(data);
+// Crear un nuevo juego
+export const crearJuego = async (data) => {
+  const nuevoJuego = new Juego(data);
+  return await nuevoJuego.save();
+};
 
-export const actualizarJuego = async (id, data) =>
-    await Juego.findByIdAndUpdate(id, data, { new: true });
+// Actualizar un juego
+export const actualizarJuego = async (id, data) => {
+  return await Juego.findByIdAndUpdate(id, data, { new: true });
+};
 
-export const eliminarJuego = async (id) => await Juego.findByIdAndDelete(id);
+// Eliminar un juego
+export const eliminarJuego = async (id) => {
+  return await Juego.findByIdAndDelete(id);
+};

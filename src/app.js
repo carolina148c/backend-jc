@@ -1,24 +1,23 @@
 import express from "express";
-import dotenv from "dotenv";
-import connectDB from "./config/db.js";
+import cors from "cors";
+import juegoRoutes from "./routes/juegoRoutes.js"; // ✅ importa las rutas reales de juegos
+import resenaRoutes from "./routes/resenaRoutes.js"; // esta la haremos más adelante
 
-
-dotenv.config();
 const app = express();
 
-// Middlewares
+app.use(cors());
 app.use(express.json());
 
-// Conectar a MongoDB
-connectDB();
+// Healthcheck
+app.get("/api/health", (req, res) => res.json({ status: "ok", ts: new Date().toISOString() }));
 
-// Ruta de prueba
-app.get("/", (req, res) => {
-    res.send("Servidor conectado y MongoDB funcionando.");
+// ✅ Monta las rutas de juegos y reseñas
+app.use("/api/juegos", juegoRoutes);
+app.use("/api/resenas", resenaRoutes);
+
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(err.status || 500).json({ error: err.message || "Error interno del servidor" });
 });
 
-// Puerto
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en el puerto ${PORT}`);
-});
+export default app;

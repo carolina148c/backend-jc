@@ -1,62 +1,55 @@
-import * as juegoService from "../services/juegoService.js";
+import Juego from "../models/Juego.js";
 
-export const getJuegos = async (req, res) => {
-    try {
-    const juegos = await juegoService.obtenerJuegos();
+// Obtener todos los juegos
+export const obtenerJuegos = async (req, res) => {
+  try {
+    const juegos = await Juego.find().sort({ fechaCreacion: -1 });
     res.json(juegos);
-    } catch (error) {
+  } catch (error) {
     res.status(500).json({ error: "Error al obtener los juegos" });
-    }
+  }
 };
 
-export const getJuego = async (req, res) => {
-    try {
-    const juego = await juegoService.obtenerJuegoPorId(req.params.id);
+// Obtener un juego por ID
+export const obtenerJuegoPorId = async (req, res) => {
+  try {
+    const juego = await Juego.findById(req.params.id);
     if (!juego) return res.status(404).json({ error: "Juego no encontrado" });
     res.json(juego);
-    } catch (error) {
-    res.status(500).json({ error: "Error al obtener el juego" });
-    }
+  } catch (error) {
+    res.status(400).json({ error: "ID inválido o error en la búsqueda" });
+  }
 };
 
-export const createJuego = async (req, res) => {
-    try {
-    const { titulo, genero, plataforma, añoLanzamiento, desarrollador, imagenPortada, descripcion, completado } = req.body;
-
-    const nuevoJuego = await juegoService.crearJuego({
-        titulo,
-        genero,
-        plataforma,
-        añoLanzamiento,
-        desarrollador,
-        imagenPortada,
-        descripcion,
-        completado,
-    });
-
+// Crear nuevo juego
+export const crearJuego = async (req, res) => {
+  try {
+    const nuevoJuego = new Juego(req.body);
+    await nuevoJuego.save();
     res.status(201).json(nuevoJuego);
-    } catch (error) {
+  } catch (error) {
     res.status(400).json({ error: "Error al crear el juego" });
-    }
+  }
 };
 
-export const updateJuego = async (req, res) => {
-    try {
-    const juego = await juegoService.actualizarJuego(req.params.id, req.body);
-    if (!juego) return res.status(404).json({ error: "Juego no encontrado" });
-    res.json(juego);
-    } catch (error) {
+// Actualizar juego existente
+export const actualizarJuego = async (req, res) => {
+  try {
+    const juegoActualizado = await Juego.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!juegoActualizado) return res.status(404).json({ error: "Juego no encontrado" });
+    res.json(juegoActualizado);
+  } catch (error) {
     res.status(400).json({ error: "Error al actualizar el juego" });
-    }
+  }
 };
 
-export const deleteJuego = async (req, res) => {
-    try {
-    const eliminado = await juegoService.eliminarJuego(req.params.id);
-    if (!eliminado)
-        return res.status(404).json({ error: "Juego no encontrado" });
+// Eliminar juego
+export const eliminarJuego = async (req, res) => {
+  try {
+    const eliminado = await Juego.findByIdAndDelete(req.params.id);
+    if (!eliminado) return res.status(404).json({ error: "Juego no encontrado" });
     res.json({ mensaje: "Juego eliminado correctamente" });
-    } catch (error) {
-    res.status(500).json({ error: "Error al eliminar el juego" });
-    }
+  } catch (error) {
+    res.status(400).json({ error: "Error al eliminar el juego" });
+  }
 };
