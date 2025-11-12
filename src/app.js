@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import juegoRoutes from "./routes/juegoRoutes.js"; // ✅ importa las rutas reales de juegos
-import resenaRoutes from "./routes/resenaRoutes.js"; // esta la haremos más adelante
+import juegoRoutes from "./routes/juegoRoutes.js"; // Rutas de juegos
+import resenaRoutes from "./routes/resenaRoutes.js"; // Rutas de reseñas
 
 const app = express();
 
@@ -11,7 +11,7 @@ app.use(express.json());
 // Healthcheck
 app.get("/api/health", (req, res) => res.json({ status: "ok", ts: new Date().toISOString() }));
 
-// ✅ Monta las rutas de juegos y reseñas
+//RUTAS
 app.use("/api/juegos", juegoRoutes);
 app.use("/api/resenas", resenaRoutes);
 
