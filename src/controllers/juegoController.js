@@ -3,7 +3,7 @@ import Juego from "../models/Juego.js";
 // Obtener todos los juegos
 export const obtenerJuegos = async (req, res) => {
   try {
-    const juegos = await Juego.find().sort({ fechaCreacion: -1 });
+    const juegos = await Juego.find(); // Ya no ordenamos por fechaCreacion
     res.json(juegos);
   } catch (error) {
     res.status(500).json({ error: "Error al obtener los juegos" });
@@ -35,8 +35,15 @@ export const crearJuego = async (req, res) => {
 // Actualizar juego existente
 export const actualizarJuego = async (req, res) => {
   try {
-    const juegoActualizado = await Juego.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!juegoActualizado) return res.status(404).json({ error: "Juego no encontrado" });
+    const juegoActualizado = await Juego.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!juegoActualizado)
+      return res.status(404).json({ error: "Juego no encontrado" });
+
     res.json(juegoActualizado);
   } catch (error) {
     res.status(400).json({ error: "Error al actualizar el juego" });
@@ -47,7 +54,10 @@ export const actualizarJuego = async (req, res) => {
 export const eliminarJuego = async (req, res) => {
   try {
     const eliminado = await Juego.findByIdAndDelete(req.params.id);
-    if (!eliminado) return res.status(404).json({ error: "Juego no encontrado" });
+
+    if (!eliminado)
+      return res.status(404).json({ error: "Juego no encontrado" });
+
     res.json({ mensaje: "Juego eliminado correctamente" });
   } catch (error) {
     res.status(400).json({ error: "Error al eliminar el juego" });
