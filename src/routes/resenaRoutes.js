@@ -9,11 +9,19 @@ import {
 
 const router = express.Router();
 
-// Endpoints de reseñas
-router.get("/", obtenerResenas); // Obtener todas las reseñas
-router.get("/juego/:juegoId", obtenerResenasPorJuego); // Reseñas por juego
-router.post("/", crearResena); // Crear nueva reseña
-router.put("/:id", actualizarResena); // Actualizar reseña
-router.delete("/:id", eliminarResena); // Eliminar reseña
+// Obtener todas las reseñas
+router.get("/", obtenerResenas);
+
+// Obtener reseñas por nombre del juego 
+router.get("/juego/:juegoNombre", obtenerResenasPorJuego);
+
+// Crear una reseña
+router.post("/", crearResena);
+
+// Editar una reseña
+router.put("/:id", actualizarResena);
+
+// Eliminar una reseña
+router.delete("/:id", eliminarResena);
 
 export default router;
