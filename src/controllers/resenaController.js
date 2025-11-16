@@ -4,57 +4,22 @@ import Juego from "../models/Juego.js";
 // Obtener todas las reseñas con información del juego
 export const obtenerResenas = async (req, res) => {
     try {
-        const resenas = await Resena.find();
-
-        const resenasConInfo = await Promise.all(
-            resenas.map(async (r) => {
-                const juego = await Juego.findOne({ titulo: r.juegoNombre });
-
-                return {
-                    ...r.toObject(),
-                    juegoInfo: juego
-                        ? {
-                            titulo: juego.titulo,
-                            genero: juego.genero,
-                            plataforma: juego.plataforma,
-                        }
-                        : null,
-                };
-            })
-        );
-
-        res.json(resenasConInfo);
+        const resenas = await Resena.find().populate("juegoId");
+        res.json(resenas);
     } catch (error) {
+        console.error("Error al obtener reseñas:", error);
         res.status(500).json({ error: "Error al obtener las reseñas" });
     }
 };
 
-// Obtener reseñas por nombre del juego
+// Obtener reseñas por ID del juego
 export const obtenerResenasPorJuego = async (req, res) => {
     try {
-        const nombreJuego = req.params.juegoNombre;
-
-        const resenas = await Resena.find({ juegoNombre: nombreJuego });
-
-        const resenasConInfo = await Promise.all(
-            resenas.map(async (r) => {
-                const juego = await Juego.findOne({ titulo: r.juegoNombre });
-
-                return {
-                    ...r.toObject(),
-                    juegoInfo: juego
-                        ? {
-                            titulo: juego.titulo,
-                            genero: juego.genero,
-                            plataforma: juego.plataforma,
-                        }
-                        : null,
-                };
-            })
-        );
-
-        res.json(resenasConInfo);
+        const juegoId = req.params.juegoNombre; // Para compatibilidad, aunque el nombre es confuso
+        const resenas = await Resena.find({ juegoId }).populate("juegoId");
+        res.json(resenas);
     } catch (error) {
+        console.error("Error al obtener reseñas del juego:", error);
         res.status(400).json({ error: "Error al obtener reseñas del juego" });
     }
 };
@@ -62,11 +27,34 @@ export const obtenerResenasPorJuego = async (req, res) => {
 // Crear una nueva reseña
 export const crearResena = async (req, res) => {
     try {
-        const nuevaResena = new Resena(req.body);
+        const body = { ...req.body };
+
+        console.log("📝 Body recibido:", body);
+
+        // Si envían juegoId, usarlo directamente; si envían juegoNombre, resolver
+        if (body.juegoId && body.juegoId !== "") {
+            console.log(`✅ juegoId recibido: ${body.juegoId}`);
+        } else if (body.juegoNombre && body.juegoNombre !== "") {
+            console.log(`🔍 Buscando juego por nombre: "${body.juegoNombre}"`);
+            const juego = await Juego.findOne({ titulo: body.juegoNombre });
+            if (juego) {
+                body.juegoId = juego._id;
+                console.log(`✅ Juego encontrado: ${body.juegoNombre} (ID: ${juego._id})`);
+            } else {
+                console.warn(`⚠️ Juego no encontrado: "${body.juegoNombre}". Se guardará sin juegoId.`);
+            }
+        } else {
+            console.warn("⚠️ Ni juegoId ni juegoNombre proporcionados.");
+        }
+
+        const nuevaResena = new Resena(body);
         await nuevaResena.save();
+        await nuevaResena.populate("juegoId");
+        console.log(`✅ Reseña guardada:`, nuevaResena);
         res.status(201).json(nuevaResena);
     } catch (error) {
-        res.status(400).json({ error: "Error al crear la reseña" });
+        console.error("❌ Error al crear reseña:", error.message);
+        res.status(400).json({ error: "Error al crear la reseña", details: error.message });
     }
 };
 
@@ -80,7 +68,7 @@ export const actualizarResena = async (req, res) => {
                 new: true,
                 runValidators: true,
             }
-        );
+        ).populate("juegoId");
 
         if (!resenaActualizada) {
             return res.status(404).json({ error: "Reseña no encontrada" });
@@ -88,7 +76,8 @@ export const actualizarResena = async (req, res) => {
 
         res.json(resenaActualizada);
     } catch (error) {
-        res.status(400).json({ error: "Error al actualizar la reseña" });
+        console.error("Error al actualizar reseña:", error);
+        res.status(400).json({ error: "Error al actualizar la reseña", details: error.message });
     }
 };
 
@@ -103,6 +92,7 @@ export const eliminarResena = async (req, res) => {
 
         res.json({ mensaje: "Reseña eliminada correctamente" });
     } catch (error) {
-        res.status(400).json({ error: "Error al eliminar la reseña" });
+        console.error("Error al eliminar reseña:", error);
+        res.status(400).json({ error: "Error al eliminar la reseña", details: error.message });
     }
 };
