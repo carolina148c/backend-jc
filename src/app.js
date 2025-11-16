@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
 import juegoRoutes from "./routes/juegoRoutes.js"; // Rutas de juegos
 import resenaRoutes from "./routes/resenaRoutes.js"; // Rutas de reseñas
 
@@ -7,6 +8,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+// Servir archivos estáticos subidos (portadas)
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Healthcheck
 app.get("/api/health", (req, res) => res.json({ status: "ok", ts: new Date().toISOString() }));
