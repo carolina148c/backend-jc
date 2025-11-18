@@ -29,31 +29,31 @@ export const crearResena = async (req, res) => {
     try {
         const body = { ...req.body };
 
-        console.log("📝 Body recibido:", body);
+        console.log("Body recibido:", body);
 
         // Si envían juegoId, usarlo directamente; si envían juegoNombre, resolver
         if (body.juegoId && body.juegoId !== "") {
-            console.log(`✅ juegoId recibido: ${body.juegoId}`);
+            console.log(`juegoId recibido: ${body.juegoId}`);
         } else if (body.juegoNombre && body.juegoNombre !== "") {
-            console.log(`🔍 Buscando juego por nombre: "${body.juegoNombre}"`);
+            console.log(`Buscando juego por nombre: "${body.juegoNombre}"`);
             const juego = await Juego.findOne({ titulo: body.juegoNombre });
             if (juego) {
                 body.juegoId = juego._id;
-                console.log(`✅ Juego encontrado: ${body.juegoNombre} (ID: ${juego._id})`);
+                console.log(`Juego encontrado: ${body.juegoNombre} (ID: ${juego._id})`);
             } else {
-                console.warn(`⚠️ Juego no encontrado: "${body.juegoNombre}". Se guardará sin juegoId.`);
+                console.warn(`Juego no encontrado: "${body.juegoNombre}". Se guardará sin juegoId.`);
             }
         } else {
-            console.warn("⚠️ Ni juegoId ni juegoNombre proporcionados.");
+            console.warn("Ni juegoId ni juegoNombre proporcionados.");
         }
 
         const nuevaResena = new Resena(body);
         await nuevaResena.save();
         await nuevaResena.populate("juegoId");
-        console.log(`✅ Reseña guardada:`, nuevaResena);
+        console.log(`Reseña guardada:`, nuevaResena);
         res.status(201).json(nuevaResena);
     } catch (error) {
-        console.error("❌ Error al crear reseña:", error.message);
+        console.error("Error al crear reseña:", error.message);
         res.status(400).json({ error: "Error al crear la reseña", details: error.message });
     }
 };
