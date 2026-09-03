@@ -18,10 +18,10 @@ const connectDB = async (attempt = 1) => {
   } catch (error) {
     console.error(`Error Atlas (intento ${attempt}):`, error.message);
     
-    // Si falla Atlas después de 2 intentos, intentar conexión local
+    // Si falla Atlas después de 2 intentos, se intenta una conexión local
     if (attempt >= 2) {
       try {
-        console.log("\n📡 Intentando conexión a MongoDB local...");
+        console.log("\n Intentando conexión a MongoDB local...");
         const localUri = "mongodb://localhost:27017/ProyectoFinal";
         const mongooseInstance = await mongoose.connect(localUri, {
           serverSelectionTimeoutMS: 3000,
